@@ -1,0 +1,71 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Teams = game:GetService("Teams")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local Mouse = LocalPlayer:GetMouse()
+local Camera = workspace.CurrentCamera
+local BoundTeleportKey = nil
+local WaitingForTeleportKey = false
+local BoundReopenKey = Enum.KeyCode.F9
+local WaitingForReopenKey = false
+local BoundStopSpectatingKey = Enum.KeyCode.LeftAlt
+local WaitingForStopSpectatingKey = false
+local BoundUnlockCamKey = Enum.KeyCode.Z
+local WaitingForUnlockCamKey = false
+local BoundAimbotKey = nil
+local WaitingForAimbotKey = false
+local Minimized = false
+local CurrentTab = "Aimbot"
+local ESPSettings = {
+	Enabled = true,
+	Names = true,
+	Distance = true,
+	Health = true,
+	Lines = false,
+	Color = Color3.fromRGB(255, 48, 51),
+	TextColor = Color3.fromRGB(255, 255, 255)
+}
+local HealthStyle = "Bar"
+local ESPObjects = {}
+local AimbotSettings = {
+	Enabled = true,
+	Radius = 150,
+	TargetMode = "Head",
+	ShowFOV = true,
+	LineOfSight = true,
+	FOVOpacity = 0.85,
+	FOVColor = Color3.fromRGB(255, 255, 255),
+	AimKey = Enum.UserInputType.MouseButton2
+}
+local AimbotHolding = false
+local AimbotTarget = nil
+local AlternateTarget = "Head"
+local AimbotTeamSettings = {}
+for _, Team in ipairs(Teams:GetTeams()) do
+	AimbotTeamSettings[Team] = Team ~= LocalPlayer.Team
+end
+AimbotTeamSettings["NO_TEAM"] = LocalPlayer.Team == nil
+local function IsAimbotTeamSelected(Player)
+	local Key = Player.Team or "NO_TEAM"
+	if AimbotTeamSettings[Key] == nil then
+		AimbotTeamSettings[Key] = Key ~= LocalPlayer.Team
+	end
+	return AimbotTeamSettings[Key]
+end
+local UnlockCamEnabled = false
+local SpectatingPlayer = nil
+local OriginalCameraSubject = nil
+local UnlockCamStateBeforeSpectate = false
+local OriginalCameraMaxZoomDistance =
+	LocalPlayer.CameraMaxZoomDistance
+local OriginalCameraMinZoomDistance =
+	LocalPlayer.CameraMinZoomDistance
+local OriginalOcclusionMode =
+	LocalPlayer.DevCameraOcclusionMode
+local UNLOCKED_MAX_ZOOM = 1000000
+local MIN_WIDTH = 500
+local MIN_HEIGHT = 360
+local DEFAULT_WIDTH = 620
+local DEFAULT_HEIGHT = 460

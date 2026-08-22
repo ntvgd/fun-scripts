@@ -1,0 +1,1 @@
+Upload these files to the repository root. The loader downloads all modules in dependency order and concatenates them before execution. This version removes only standalone comments and blank lines from the split source; executable code is preserved.
