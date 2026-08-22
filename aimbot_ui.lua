@@ -8,7 +8,7 @@ AimbotPage.BorderSizePixel = 0
 AimbotPage.ScrollBarThickness = 6
 AimbotPage.ScrollBarImageTransparency = 0.15
 AimbotPage.ScrollingDirection = Enum.ScrollingDirection.Y
-AimbotPage.CanvasSize = UDim2.new(0, 0, 0, 500)
+AimbotPage.CanvasSize = UDim2.new(0, 0, 0, 760)
 AimbotPage.ClipsDescendants = true
 AimbotPage.Visible = true
 AimbotPage.Parent = ContentArea
@@ -333,12 +333,205 @@ VisibilityButton.MouseButton1Click:Connect(
 UpdateVisibilityButton()
 
 --==================================================
+-- AIMBOT TEAM SELECTOR
+--==================================================
+
+local AimbotTeamHeader = Instance.new("TextLabel")
+AimbotTeamHeader.Size = UDim2.new(1, -10, 0, 20)
+AimbotTeamHeader.Position = UDim2.new(0, 0, 0, 575)
+AimbotTeamHeader.BackgroundTransparency = 1
+AimbotTeamHeader.Text = "LOCK-ON TEAMS"
+AimbotTeamHeader.TextColor3 = Color3.fromRGB(210, 210, 210)
+AimbotTeamHeader.TextSize = 11
+AimbotTeamHeader.Font = Enum.Font.GothamBold
+AimbotTeamHeader.TextXAlignment = Enum.TextXAlignment.Left
+AimbotTeamHeader.Parent = AimbotPage
+
+local AimbotTeamDropdown = Instance.new("TextButton")
+AimbotTeamDropdown.Size = UDim2.new(1, -10, 0, 38)
+AimbotTeamDropdown.Position = UDim2.new(0, 0, 0, 600)
+AimbotTeamDropdown.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+AimbotTeamDropdown.BorderSizePixel = 0
+AimbotTeamDropdown.Text = "   SELECT TEAMS ▼"
+AimbotTeamDropdown.TextColor3 = Color3.fromRGB(220, 220, 220)
+AimbotTeamDropdown.TextSize = 12
+AimbotTeamDropdown.Font = Enum.Font.Gotham
+AimbotTeamDropdown.TextXAlignment = Enum.TextXAlignment.Left
+AimbotTeamDropdown.Parent = AimbotPage
+
+local AimbotTeamDropdownCorner = Instance.new("UICorner")
+AimbotTeamDropdownCorner.CornerRadius = UDim.new(0, 6)
+AimbotTeamDropdownCorner.Parent = AimbotTeamDropdown
+
+local AimbotTeamList = Instance.new("ScrollingFrame")
+AimbotTeamList.Size = UDim2.new(1, -10, 0, 150)
+AimbotTeamList.Position = UDim2.new(0, 0, 0, 414)
+AimbotTeamList.BackgroundColor3 = Color3.fromRGB(27, 27, 27)
+AimbotTeamList.BorderSizePixel = 0
+AimbotTeamList.ScrollBarThickness = 5
+AimbotTeamList.Visible = false
+AimbotTeamList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+AimbotTeamList.CanvasSize = UDim2.new(0, 0, 0, 0)
+AimbotTeamList.Parent = AimbotPage
+
+local AimbotTeamListCorner = Instance.new("UICorner")
+AimbotTeamListCorner.CornerRadius = UDim.new(0, 6)
+AimbotTeamListCorner.Parent = AimbotTeamList
+
+local AimbotTeamLayout = Instance.new("UIListLayout")
+AimbotTeamLayout.Padding = UDim.new(0, 4)
+AimbotTeamLayout.SortOrder = Enum.SortOrder.LayoutOrder
+AimbotTeamLayout.Parent = AimbotTeamList
+
+local AimbotTeamPadding = Instance.new("UIPadding")
+AimbotTeamPadding.PaddingTop = UDim.new(0, 5)
+AimbotTeamPadding.PaddingBottom = UDim.new(0, 5)
+AimbotTeamPadding.PaddingLeft = UDim.new(0, 5)
+AimbotTeamPadding.PaddingRight = UDim.new(0, 5)
+AimbotTeamPadding.Parent = AimbotTeamList
+
+local AimbotTeamButtons = {}
+
+local function UpdateAimbotTeamButton(TeamKey)
+	local Data = AimbotTeamButtons[TeamKey]
+	if not Data then
+		return
+	end
+
+	local Selected = AimbotTeamSettings[TeamKey] ~= false
+
+	if Selected then
+		Data.Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Data.Label.TextColor3 = Color3.fromRGB(20, 20, 20)
+	else
+		Data.Button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		Data.Label.TextColor3 = Color3.fromRGB(120, 120, 120)
+	end
+end
+
+local function CreateAimbotTeamButton(TeamKey, TeamName, TeamColor, Order)
+	if AimbotTeamButtons[TeamKey] then
+		AimbotTeamButtons[TeamKey].Button.LayoutOrder = Order
+		UpdateAimbotTeamButton(TeamKey)
+		return
+	end
+
+	if AimbotTeamSettings[TeamKey] == nil then
+		AimbotTeamSettings[TeamKey] = TeamKey ~= LocalPlayer.Team
+	end
+
+	local Button = Instance.new("TextButton")
+	Button.Size = UDim2.new(1, -10, 0, 32)
+	Button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	Button.BorderSizePixel = 0
+	Button.Text = ""
+	Button.LayoutOrder = Order
+	Button.Parent = AimbotTeamList
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 5)
+	Corner.Parent = Button
+
+	local Indicator = Instance.new("Frame")
+	Indicator.Size = UDim2.fromOffset(12, 12)
+	Indicator.Position = UDim2.new(0, 10, 0.5, -6)
+	Indicator.BackgroundColor3 = TeamColor
+	Indicator.BorderSizePixel = 0
+	Indicator.Parent = Button
+
+	local IndicatorCorner = Instance.new("UICorner")
+	IndicatorCorner.CornerRadius = UDim.new(1, 0)
+	IndicatorCorner.Parent = Indicator
+
+	local Label = Instance.new("TextLabel")
+	Label.Size = UDim2.new(1, -35, 1, 0)
+	Label.Position = UDim2.fromOffset(30, 0)
+	Label.BackgroundTransparency = 1
+	Label.Text = TeamName
+	Label.TextSize = 12
+	Label.Font = Enum.Font.Gotham
+	Label.TextXAlignment = Enum.TextXAlignment.Left
+	Label.Parent = Button
+
+	Button.MouseButton1Click:Connect(function()
+		AimbotTeamSettings[TeamKey] = not (AimbotTeamSettings[TeamKey] ~= false)
+		AimbotTarget = nil
+		UpdateAimbotTeamButton(TeamKey)
+	end)
+
+	AimbotTeamButtons[TeamKey] = {
+		Button = Button,
+		Label = Label
+	}
+
+	UpdateAimbotTeamButton(TeamKey)
+end
+
+local function RebuildAimbotTeamList()
+	local Existing = {}
+
+	Existing["NO_TEAM"] = true
+	CreateAimbotTeamButton(
+		"NO_TEAM",
+		"No Team",
+		Color3.fromRGB(180, 180, 180),
+		1
+	)
+
+	local TeamList = Teams:GetTeams()
+	table.sort(TeamList, function(A, B)
+		return A.Name:lower() < B.Name:lower()
+	end)
+
+	for Index, Team in ipairs(TeamList) do
+		Existing[Team] = true
+		CreateAimbotTeamButton(
+			Team,
+			Team.Name,
+			Team.TeamColor.Color,
+			Index + 1
+		)
+	end
+
+	for TeamKey, Data in pairs(AimbotTeamButtons) do
+		if not Existing[TeamKey] then
+			if Data.Button then
+				Data.Button:Destroy()
+			end
+			AimbotTeamButtons[TeamKey] = nil
+			AimbotTeamSettings[TeamKey] = nil
+		end
+	end
+end
+
+RebuildAimbotTeamList()
+
+AimbotTeamDropdown.MouseButton1Click:Connect(function()
+	AimbotTeamList.Visible = not AimbotTeamList.Visible
+	AimbotTeamDropdown.Text = AimbotTeamList.Visible
+		and "   SELECT TEAMS ▲"
+		or "   SELECT TEAMS ▼"
+end)
+
+Teams.ChildAdded:Connect(function(Child)
+	if Child:IsA("Team") then
+		RebuildAimbotTeamList()
+	end
+end)
+
+Teams.ChildRemoved:Connect(function(Child)
+	if Child:IsA("Team") then
+		RebuildAimbotTeamList()
+	end
+end)
+
+--==================================================
 -- AIMBOT FOV OPACITY
 --==================================================
 
 local FOVOpacityLabel = Instance.new("TextLabel")
 FOVOpacityLabel.Size = UDim2.new(1, -10, 0, 20)
-FOVOpacityLabel.Position = UDim2.new(0, 0, 0, 345)
+FOVOpacityLabel.Position = UDim2.new(0, 0, 0, 575)
 FOVOpacityLabel.BackgroundTransparency = 1
 FOVOpacityLabel.Text = "FOV OPACITY"
 FOVOpacityLabel.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -349,7 +542,7 @@ FOVOpacityLabel.Parent = AimbotPage
 
 local FOVOpacityValue = Instance.new("TextBox")
 FOVOpacityValue.Size = UDim2.new(0, 110, 0, 38)
-FOVOpacityValue.Position = UDim2.new(0, 0, 0, 370)
+FOVOpacityValue.Position = UDim2.new(0, 0, 0, 600)
 FOVOpacityValue.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
 FOVOpacityValue.BorderSizePixel = 0
 FOVOpacityValue.Text =
@@ -370,7 +563,7 @@ FOVOpacityCorner.Parent = FOVOpacityValue
 
 local FOVOpacityMinus = Instance.new("TextButton")
 FOVOpacityMinus.Size = UDim2.new(0, 38, 0, 38)
-FOVOpacityMinus.Position = UDim2.new(0, 118, 0, 370)
+FOVOpacityMinus.Position = UDim2.new(0, 118, 0, 600)
 FOVOpacityMinus.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 FOVOpacityMinus.BorderSizePixel = 0
 FOVOpacityMinus.Text = "-"
@@ -385,7 +578,7 @@ FOVOpacityMinusCorner.Parent = FOVOpacityMinus
 
 local FOVOpacityPlus = Instance.new("TextButton")
 FOVOpacityPlus.Size = UDim2.new(0, 38, 0, 38)
-FOVOpacityPlus.Position = UDim2.new(0, 162, 0, 370)
+FOVOpacityPlus.Position = UDim2.new(0, 162, 0, 600)
 FOVOpacityPlus.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 FOVOpacityPlus.BorderSizePixel = 0
 FOVOpacityPlus.Text = "+"
@@ -456,7 +649,7 @@ FOVOpacityPlus.MouseButton1Click:Connect(
 
 local FOVColorLabel = Instance.new("TextLabel")
 FOVColorLabel.Size = UDim2.new(1, -10, 0, 20)
-FOVColorLabel.Position = UDim2.new(0, 0, 0, 420)
+FOVColorLabel.Position = UDim2.new(0, 0, 0, 650)
 FOVColorLabel.BackgroundTransparency = 1
 FOVColorLabel.Text = "FOV COLOR"
 FOVColorLabel.TextColor3 = Color3.fromRGB(210, 210, 210)
@@ -542,7 +735,7 @@ local FOVColors = {
 
 local FOVColorContainer = Instance.new("Frame")
 FOVColorContainer.Size = UDim2.new(1, -10, 0, 35)
-FOVColorContainer.Position = UDim2.new(0, 0, 0, 440)
+FOVColorContainer.Position = UDim2.new(0, 0, 0, 670)
 FOVColorContainer.BackgroundTransparency = 1
 FOVColorContainer.Parent = AimbotPage
 

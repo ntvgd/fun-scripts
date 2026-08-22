@@ -385,7 +385,7 @@ local function CreateKeybindSection(
 	Label.Size =
 		UDim2.new(
 			1,
-			-130,
+			-210,
 			0,
 			24
 		)
@@ -422,7 +422,7 @@ local function CreateKeybindSection(
 	Desc.Size =
 		UDim2.new(
 			1,
-			-130,
+			-210,
 			0,
 			20
 		)
@@ -452,6 +452,33 @@ local function CreateKeybindSection(
 
 	Desc.Parent =
 		Section
+
+	local Unbind =
+		Instance.new("TextButton")
+
+	Unbind.Size =
+		UDim2.new(0, 70, 0, 38)
+
+	Unbind.Position =
+		UDim2.new(1, -190, 0, 23)
+
+	Unbind.BackgroundColor3 =
+		Color3.fromRGB(85, 40, 40)
+
+	Unbind.BorderSizePixel = 0
+	Unbind.Text = "UNBIND"
+	Unbind.TextColor3 =
+		Color3.fromRGB(255, 120, 120)
+	Unbind.TextSize = 10
+	Unbind.Font = Enum.Font.GothamBold
+	Unbind.Parent = Section
+
+	local UnbindCorner =
+		Instance.new("UICorner")
+
+	UnbindCorner.CornerRadius =
+		UDim.new(0, 6)
+	UnbindCorner.Parent = Unbind
 
 	local Keybind =
 		Instance.new("TextButton")
@@ -506,10 +533,10 @@ local function CreateKeybindSection(
 	KeyCorner.Parent =
 		Keybind
 
-	return Keybind
+	return Keybind, Unbind
 end
 
-local TeleportKeybind =
+local TeleportKeybind, TeleportUnbind =
 	CreateKeybindSection(
 		SettingsPage,
 		"Teleport",
@@ -518,7 +545,7 @@ local TeleportKeybind =
 		"UNBOUND"
 	)
 
-local ReopenKeybind =
+local ReopenKeybind, ReopenUnbind =
 	CreateKeybindSection(
 		SettingsPage,
 		"Reopen",
@@ -527,7 +554,7 @@ local ReopenKeybind =
 		"F9"
 	)
 
-local StopSpectatingKeybind =
+local StopSpectatingKeybind, StopSpectatingUnbind =
 	CreateKeybindSection(
 		SettingsPage,
 		"Stop Spectating",
@@ -536,7 +563,7 @@ local StopSpectatingKeybind =
 		"LeftAlt"
 	)
 
-local UnlockCamKeybind =
+local UnlockCamKeybind, UnlockCamUnbind =
 	CreateKeybindSection(
 		SettingsPage,
 		"Free Cam",
@@ -545,7 +572,7 @@ local UnlockCamKeybind =
 		"Z"
 	)
 
-local AimbotKeybind =
+local AimbotKeybind, AimbotUnbind =
 	CreateKeybindSection(
 		SettingsPage,
 		"Aimbot",
@@ -553,6 +580,41 @@ local AimbotKeybind =
 		445,
 		"UNBOUND"
 	)
+
+TeleportUnbind.MouseButton1Click:Connect(function()
+	BoundTeleportKey = nil
+	WaitingForTeleportKey = false
+	TeleportKeybind.Text = "UNBOUND"
+	TeleportKeybind.TextColor3 = Color3.fromRGB(100, 255, 100)
+end)
+
+ReopenUnbind.MouseButton1Click:Connect(function()
+	BoundReopenKey = nil
+	WaitingForReopenKey = false
+	ReopenKeybind.Text = "UNBOUND"
+	ReopenKeybind.TextColor3 = Color3.fromRGB(100, 255, 100)
+end)
+
+StopSpectatingUnbind.MouseButton1Click:Connect(function()
+	BoundStopSpectatingKey = nil
+	WaitingForStopSpectatingKey = false
+	StopSpectatingKeybind.Text = "UNBOUND"
+	StopSpectatingKeybind.TextColor3 = Color3.fromRGB(100, 255, 100)
+end)
+
+UnlockCamUnbind.MouseButton1Click:Connect(function()
+	BoundUnlockCamKey = nil
+	WaitingForUnlockCamKey = false
+	UnlockCamKeybind.Text = "UNBOUND"
+	UnlockCamKeybind.TextColor3 = Color3.fromRGB(100, 255, 100)
+end)
+
+AimbotUnbind.MouseButton1Click:Connect(function()
+	BoundAimbotKey = nil
+	WaitingForAimbotKey = false
+	AimbotKeybind.Text = "UNBOUND"
+	AimbotKeybind.TextColor3 = Color3.fromRGB(100, 255, 100)
+end)
 
 --==================================================
 -- TOOLTIP

@@ -7,6 +7,7 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local Teams = game:GetService("Teams")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -78,6 +79,22 @@ local AimbotSettings = {
 local AimbotHolding = false
 local AimbotTarget = nil
 local AlternateTarget = "Head"
+local AimbotTeamSettings = {}
+
+for _, Team in ipairs(Teams:GetTeams()) do
+	AimbotTeamSettings[Team] = Team ~= LocalPlayer.Team
+end
+AimbotTeamSettings["NO_TEAM"] = LocalPlayer.Team == nil
+
+local function IsAimbotTeamSelected(Player)
+	local Key = Player.Team or "NO_TEAM"
+
+	if AimbotTeamSettings[Key] == nil then
+		AimbotTeamSettings[Key] = Key ~= LocalPlayer.Team
+	end
+
+	return AimbotTeamSettings[Key]
+end
 
 --==================================================
 -- CAMERA

@@ -147,6 +147,10 @@ local function GetClosestAimbotTarget()
 			continue
 		end
 
+		if not IsAimbotTeamSelected(Player) then
+			continue
+		end
+
 		local Character =
 			Player.Character
 
